@@ -10,7 +10,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.cloudflare"})
 @EnableScheduling
-//@EnableBatchProcessing
 @EnableAsync
 public class BillOnSignDateApplication {
   public static void main(String[] args) {
