@@ -18,6 +18,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 
+import java.util.concurrent.CompletableFuture;
+
 @Configuration
 @AllArgsConstructor
 public class SpringBatchConfig {
@@ -32,7 +34,7 @@ public class SpringBatchConfig {
 
   @Bean
   public Step initialBatchProcess(CustomerItemReader reader, CustomerItemProcessor processor) {
-    return stepBuilderFactory.get("bill-on-SignDate").<CustomerInfo, String>chunk(appInfo.getChunkSize())
+    return stepBuilderFactory.get("bill-on-SignDate").<CustomerInfo, CompletableFuture<String>>chunk(appInfo.getChunkSize())
                              .reader(reader)
                              .processor(processor)
                              .writer(new NoOpItemWriter())

@@ -23,7 +23,8 @@ public interface SubscriptionInfoRepo
       nativeQuery = true)
   List<CustomerInfo> getSubscriptionListByDate0(String batchDate);
 
-  @Query(value = "SELECT * FROM CUSTOMER_INFO WHERE DATE(NEXT_INVOICE_DATE) <= to_date(:batchDate, 'yyyy-MM-dd') ",
+  @Query(value = "SELECT * FROM CUSTOMER_INFO WHERE CAST(NEXT_INVOICE_DATE as DATE) <= to_date(:batchDate, " +
+      "'yyyy-MM-dd') ",
       nativeQuery = true)
   Page<CustomerInfo> getSubscriptionListByDate(String batchDate, Pageable pageable);
 

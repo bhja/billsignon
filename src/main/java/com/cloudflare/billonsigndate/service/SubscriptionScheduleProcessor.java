@@ -41,6 +41,7 @@ public class SubscriptionScheduleProcessor {
       String batchDate = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now());
       List<SubscriptionModel> subscriptionList = subscriptionRepoService.getSubscriptionListBySignInDate(batchDate);
       log.info("Customer List from DB  {}", subscriptionList);
+      CompletableFuture completableFutures = new CompletableFuture();
       subscriptionList.forEach(subscriptionInfo -> {
         CompletableFuture.supplyAsync(() ->
                                       {

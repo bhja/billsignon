@@ -15,13 +15,14 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 
 @Component
 public class CustomerItemProcessor
-    implements ItemProcessor<CustomerInfo, String> {
+    implements ItemProcessor<CustomerInfo, CompletableFuture<String>> {
 
   private Logger logger = LoggerFactory.getLogger(CustomerItemProcessor.class);
 
@@ -38,8 +39,9 @@ public class CustomerItemProcessor
 
 
   @Override
-  public String process(CustomerInfo customerInfo) throws Exception {
+  public CompletableFuture<String> process(CustomerInfo customerInfo) throws Exception {
     logger.debug("{}", customerInfo);
+    CompletableFuture<String> completableFuture = new CompletableFuture<>();
     if (customerInfo != null) {
       CompletableFuture.supplyAsync(() -> getSubscription(customerInfo).whenComplete((value, error) -> {
         if (error == null) {
@@ -48,20 +50,24 @@ public class CustomerItemProcessor
             postSubscription(null).whenComplete((val, err) -> {
                                                   if (err == null) {
                                                     //Process the code.
-
+                                                    completableFuture.complete("Success for {}"+customerInfo);
                                                   }else{
                                                     logger.error("Issue with the call to the due to {}" ,
                                                                  err.getMessage());
+                                                    completableFuture.completeExceptionally(err);
                                                   }
                                                 }
             );
           } else {
             logger.error("Issue with the call" + value.getResponseBody());
+            completableFuture.completeExceptionally(new Exception(value.getResponseBody()));
           }
+        }else{
+          completableFuture.completeExceptionally(error);
         }
       }), executor);
     }
-    return "Task completed";
+    return completableFuture;
   }
 
   protected CompletableFuture<Response> getSubscription(CustomerInfo customerInfo) {
