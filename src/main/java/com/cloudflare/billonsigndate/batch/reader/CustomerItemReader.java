@@ -4,7 +4,6 @@ import com.cloudflare.billonsigndate.config.AppInfo;
 import com.cloudflare.billonsigndate.entity.CustomerInfo;
 import com.cloudflare.billonsigndate.repository.SubscriptionInfoRepo;
 import org.springframework.batch.item.data.RepositoryItemReader;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
@@ -17,10 +16,8 @@ import java.util.Collections;
 public class CustomerItemReader
     extends RepositoryItemReader<CustomerInfo> {
 
-  @Autowired
-  private AppInfo appInfo;
 
-  public CustomerItemReader(SubscriptionInfoRepo repository) {
+  public CustomerItemReader(SubscriptionInfoRepo repository, AppInfo appInfo) {
     super();
     setRepository(repository);
     setPageSize(appInfo.getPageSize());

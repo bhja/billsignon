@@ -28,5 +28,4 @@ public interface SubscriptionInfoRepo
   Page<CustomerInfo> getSubscriptionListByDate(String batchDate, Pageable pageable);
 
 
-
 }

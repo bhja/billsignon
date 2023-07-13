@@ -4,13 +4,13 @@ import com.cloudflare.billonsigndate.config.AppInfo;
 import com.cloudflare.billonsigndate.entity.CustomerInfo;
 import com.cloudflare.billonsigndate.model.Response;
 import com.cloudflare.billonsigndate.model.RetrieveSchedule;
-import com.cloudflare.billonsigndate.model.SubscriptionModel;
 import com.cloudflare.billonsigndate.utils.HttpUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -37,25 +37,27 @@ public class CustomerItemProcessor
   private Executor executor;
 
 
-
   @Override
   public String process(CustomerInfo customerInfo) throws Exception {
     logger.debug("{}", customerInfo);
     if (customerInfo != null) {
-      CompletableFuture.runAsync(()-> getSubscription(customerInfo).thenApplyAsync(value -> {
-        logger.debug("Value" + value);
-        //Construct the required value and pass it along
-        if (value != null) {
-          return postSubscription(null);
-        } else {
-          return CompletableFuture.completedStage(null);
-        }
+      CompletableFuture.supplyAsync(() -> getSubscription(customerInfo).whenComplete((value, error) -> {
+        if (error == null) {
+          logger.debug("Value {} ", value);
+          if (value.getStatusCode() == HttpStatus.OK.value()) {
+            postSubscription(null).whenComplete((val, err) -> {
+                                                  if (err == null) {
+                                                    //Process the code.
 
-      }).whenComplete((value, error) -> {
-        if (error != null) {
-          throw new RuntimeException(error);
-        } else {
-          //Do what you need to.
+                                                  }else{
+                                                    logger.error("Issue with the call to the due to {}" ,
+                                                                 err.getMessage());
+                                                  }
+                                                }
+            );
+          } else {
+            logger.error("Issue with the call" + value.getResponseBody());
+          }
         }
       }), executor);
     }
@@ -67,8 +69,9 @@ public class CustomerItemProcessor
     try {
       Response responseObject =
           httpUtility.post(appInfo.getGetSubscriptionItemUrl() + customerInfo.getSubscriptionScheduleId(),
-                           Collections.singletonMap("prebilling[iterations]", "1"), Collections.singletonMap("apiKey",
-                                                                                                             appInfo.getSubscriptionScheduleApiKey()));
+                          Collections.singletonMap("prebilling[iterations]", "1"), Collections.singletonMap("apiKey",
+
+                                                                                                            appInfo.getSubscriptionScheduleApiKey()));
       completableFuture.complete(responseObject);
     } catch (IOException | InterruptedException ex) {
       logger.error("Get method failed {}", ex.getMessage());
