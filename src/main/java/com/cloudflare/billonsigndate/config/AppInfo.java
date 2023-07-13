@@ -20,4 +20,10 @@ public class AppInfo
   private Integer maxPoolSize;
   private Integer queueCapacity;
 
+  private Integer pageSize;
+
+  private Integer chunkSize;
+
+  private Integer asyncPoolSize;
+
 }

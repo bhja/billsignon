@@ -3,6 +3,7 @@ package com.cloudflare.billonsigndate.batch.processor;
 import com.cloudflare.billonsigndate.config.AppInfo;
 import com.cloudflare.billonsigndate.entity.CustomerInfo;
 import com.cloudflare.billonsigndate.model.Response;
+import com.cloudflare.billonsigndate.model.RetrieveSchedule;
 import com.cloudflare.billonsigndate.model.SubscriptionModel;
 import com.cloudflare.billonsigndate.utils.HttpUtility;
 import org.slf4j.Logger;
@@ -37,13 +38,6 @@ public class CustomerItemProcessor
 
 
 
-
-//  public CustomerItemProcessor(AppInfo appInfo, HttpUtility httpUtility, @Qualifier("jobExecutor")Executor executor) {
-//    this.appInfo = appInfo;
-//    this.httpUtility = httpUtility;
-//    this.executor=executor;
-//  }
-
   @Override
   public String process(CustomerInfo customerInfo) throws Exception {
     logger.debug("{}", customerInfo);
@@ -69,7 +63,6 @@ public class CustomerItemProcessor
   }
 
   protected CompletableFuture<Response> getSubscription(CustomerInfo customerInfo) {
-
     CompletableFuture<Response> completableFuture = new CompletableFuture<>();
     try {
       Response responseObject =
@@ -84,7 +77,7 @@ public class CustomerItemProcessor
     return completableFuture;
   }
 
-  protected CompletableFuture<Response> postSubscription(SubscriptionModel model) {
+  protected CompletableFuture<Response> postSubscription(RetrieveSchedule model) {
     CompletableFuture<Response> completableFuture = new CompletableFuture<>();
     //TODO - Add the logic to run the code.
     return completableFuture;

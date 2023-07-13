@@ -31,11 +31,9 @@ public class SpringBatchConfig {
   HttpUtility httpUtility;
 
   private StepBuilderFactory stepBuilderFactory;
-  private SubscriptionInfoRepo subscriptionInfoRepo;
-
   @Bean
   public Step initialBatchProcess(CustomerItemReader reader, CustomerItemProcessor processor) {
-    return stepBuilderFactory.get("bill-on-SignDate").<CustomerInfo, String>chunk(10)
+    return stepBuilderFactory.get("bill-on-SignDate").<CustomerInfo, String>chunk(appInfo.getChunkSize())
                              .reader(reader)
                              .processor(processor)
                              .writer(new NoOpItemWriter())
@@ -45,7 +43,6 @@ public class SpringBatchConfig {
 
   @Bean
   public Job runJob(JobRepository repository,CustomerItemReader reader, CustomerItemProcessor processor) {
-
     return new JobBuilder("importCustomer").repository(repository).
                   flow(initialBatchProcess(reader, processor)).end().build();
 
@@ -54,7 +51,7 @@ public class SpringBatchConfig {
   @Bean
   public TaskExecutor taskExecutor() {
     SimpleAsyncTaskExecutor asyncTaskExecutor = new SimpleAsyncTaskExecutor();
-    asyncTaskExecutor.setConcurrencyLimit(10);
+    asyncTaskExecutor.setConcurrencyLimit(appInfo.getAsyncPoolSize());
     return asyncTaskExecutor;
   }
 
