@@ -12,6 +12,8 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +29,7 @@ public class SpringBatchConfig {
   AppInfo appInfo;
   @Autowired
   HttpUtility httpUtility;
-  private JobBuilderFactory factory;
+
   private StepBuilderFactory stepBuilderFactory;
   private SubscriptionInfoRepo subscriptionInfoRepo;
 
@@ -42,8 +44,9 @@ public class SpringBatchConfig {
   }
 
   @Bean
-  public Job runJob(CustomerItemReader reader, CustomerItemProcessor processor) {
-    return factory.get("importCustomers").
+  public Job runJob(JobRepository repository,CustomerItemReader reader, CustomerItemProcessor processor) {
+
+    return new JobBuilder("importCustomer").repository(repository).
                   flow(initialBatchProcess(reader, processor)).end().build();
 
   }
