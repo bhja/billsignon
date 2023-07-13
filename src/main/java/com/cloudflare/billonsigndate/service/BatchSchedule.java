@@ -22,8 +22,8 @@ public class BatchSchedule {
   @Autowired
   private Job job;
 
-  //@Scheduled(cron = "00 24 21 * * *")
-  @Scheduled(cron = "0 */1 * * * ?")
+
+  @Scheduled(cron = "${com.cloudflare.cronExpression}")
   public void billOnSignDate() {
     JobParameters jobParameters = new JobParametersBuilder()
         .addLong("startAt", System.currentTimeMillis()).toJobParameters();
