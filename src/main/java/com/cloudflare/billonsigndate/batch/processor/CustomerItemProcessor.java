@@ -8,6 +8,7 @@ import com.cloudflare.billonsigndate.utils.HttpUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -24,18 +25,24 @@ public class CustomerItemProcessor
   private Logger logger = LoggerFactory.getLogger(CustomerItemProcessor.class);
 
 
+  @Autowired
   private AppInfo appInfo;
+
+  @Autowired
   private HttpUtility httpUtility;
+
+  @Autowired
+  @Qualifier("jobExecutor")
   private Executor executor;
 
 
 
 
-  public CustomerItemProcessor(AppInfo appInfo, HttpUtility httpUtility, @Qualifier("jobExecutor")Executor executor) {
-    this.appInfo = appInfo;
-    this.httpUtility = httpUtility;
-    this.executor=executor;
-  }
+//  public CustomerItemProcessor(AppInfo appInfo, HttpUtility httpUtility, @Qualifier("jobExecutor")Executor executor) {
+//    this.appInfo = appInfo;
+//    this.httpUtility = httpUtility;
+//    this.executor=executor;
+//  }
 
   @Override
   public String process(CustomerInfo customerInfo) throws Exception {

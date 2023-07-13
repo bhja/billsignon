@@ -5,7 +5,7 @@ import org.springframework.batch.item.ItemWriter;
 import java.util.List;
 
 /**
- * Place
+ * Placeholder class for No operation
  */
 public class NoOpItemWriter
     implements ItemWriter {
